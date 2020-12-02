@@ -12,7 +12,7 @@ import os, time, sys
 from kirja import *
 
 # App meta
-app_name = "hinnat.ml api"
+app_name = "hinnat.ml scraper"
 app_version = "1.0"
 app_start_wait = 0
 
