@@ -1,11 +1,11 @@
 # Script written by Elias Eskelinen aka Jonnelafin
 
-#App meta
+# App meta
 app_name = "hinnat.ml api"
 app_version = "1.0"
 app_start_wait = 5
 
-#Store variables
+# Store variables
 store_url = "https://kauppa.jamera.net"
 store_url_search = "https://kauppa.jamera.net/kauppa/haku/?q="
 
@@ -13,6 +13,9 @@ store_url_search = "https://kauppa.jamera.net/kauppa/haku/?q="
 from bs4 import BeautifulSoup as soup
 import requests
 import os, time
+
+# import internal libraries
+from .kirja import *
 
 
 # Is the file already present?
@@ -36,6 +39,7 @@ def get_products(page_soup):
     for container in containers:
         product_images = container.find_all('table', {'class': 'kuva'})
         product_name = container.find_all('a', {'class': 'otsikko'}, recursive=True)
+        tuotteet.append( kirja() )
 
 if __name__ == "__main__":
     print("  _    _ _                   _               _ ")
@@ -47,7 +51,8 @@ if __name__ == "__main__":
     print("-----------------------------------------------")
     print(app_name + " version " + app_version)
     print("Licensed under the MIT-License by Elias Eskelinen 2020")
-    print("Starting scraping in " + str(app_start_wait) + " seconds, please be adviced: this could be illegal in your region and time.")
+    print("Starting scraping in " + str(
+        app_start_wait) + " seconds, please be adviced: this could be illegal in your region and time.")
     print("Press Ctrl+C to cancel at any time.")
     time.sleep(app_start_wait)
 
