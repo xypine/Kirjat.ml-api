@@ -6,3 +6,5 @@ class kirja:
         self.name = name
         self.price = price
         self.image = image
+    def __str__(self):
+        return "Kirja(" + self.name + ":" + self.price
