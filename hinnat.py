@@ -107,6 +107,7 @@ def scrape_from_file(filename):
     lines = ""
     with open(filename, "r", encoding="utf-8") as f:
         lines = f.readlines()
+    total = 0
     for i in lines:
         bookname = i.replace("\n", "")
         booknameo = i.replace("\n", "")
@@ -135,6 +136,8 @@ def scrape_from_file(filename):
 #                break
             ind += 1
         result.append(best)
+        total += best.price
+    print(str(total) + " in total.")
     return result
 if __name__ == "__main__":
     print("  _    _ _                   _               _ ")
