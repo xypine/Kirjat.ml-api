@@ -3,7 +3,7 @@
 # import the libraries
 from bs4 import BeautifulSoup as soup
 import requests
-import os, time
+import os, time, sys
 
 # import internal libraries
 from kirja import *
@@ -90,6 +90,20 @@ def scrape():
         print(i)
     print("Parsing the HTML for products...OK")
 
+def scrape_from_file(filename):
+    result = []
+    lines = ""
+    with open(filename, "r") as f:
+        lines = f.readlines()
+    for i in lines:
+        bookname = i.replace("\n", "")
+        soup = request(store_url_search + bookname)
+        products = get_products(soup, True)
+        for b in products:
+            if b.price > -1:
+                result.append(b)
+                break
+    return result
 if __name__ == "__main__":
     print("  _    _ _                   _               _ ")
     print(" | |  | (_)                 | |             | |")
@@ -105,6 +119,15 @@ if __name__ == "__main__":
     print("Press Ctrl+C to cancel at any time.")
     time.sleep(app_start_wait)
 
+    if len(sys.argv) > 1:
+        file = sys.argv[1]
+        print("Detected file as input, checking if it exists...")
+        print(str(file))
+        was = is_file_already_present(file)
+        if was:
+            scrape_from_file(file)
+        else:
+            print("File not found.")
     scrape()
 
     print("Scrape finished")
