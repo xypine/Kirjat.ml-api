@@ -1,7 +1,7 @@
 class kirja:
     image = ""
     price = 0
-    name = "Ei Nimeä?
+    name = "Ei Nimeä?"
     prices = []
     conditions = []
     def __init__(self, name="", price=0, prices = [], conditions = [], image=""):
