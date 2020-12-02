@@ -73,7 +73,7 @@ def get_products(page_soup, verbose=False):
         name = ""
         if len(product_name) > 0:
             name = product_name[0].text
-        tuotteet.append(kirja(name, price, "kuva"))
+        tuotteet.append(kirja(name, price, prices, conditions, "kuva"))
     return tuotteet
 
 def scrape():
