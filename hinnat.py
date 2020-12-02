@@ -125,9 +125,12 @@ if __name__ == "__main__":
         print(str(file))
         was = is_file_already_present(file)
         if was:
-            scrape_from_file(file)
+            scrap = scrape_from_file(file)
+            for i in scrap:
+                print(i)
         else:
             print("File not found.")
-    scrape()
+    else:
+        scrape()
 
     print("Scrape finished")
