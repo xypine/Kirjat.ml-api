@@ -102,8 +102,13 @@ def scrape(bookname="Tekijä Pitkä matematiikka 3"):
     print("Parsing the HTML for products...")
     products = get_products(soup, True)
     if products == []:
-        print("Apparently no products were found, here is the HTML for debugging:")
-        print(soup)
+        err = parse_error(soup)
+        if err == "":
+            print("Apparently no products were found, here is the HTML for debugging:")
+            print(soup)
+        else:
+            print("Store returned this error: ")
+            print(err)
     ind = 0
     best = kirja()
     bestDiff = 99999999
