@@ -1,2 +1,6 @@
+# Scraper
 beautifulsoup4
 requests
+# Server
+flask
+flask-cors
