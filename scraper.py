@@ -13,7 +13,7 @@ import os, time, sys
 from kirja import *
 
 # App meta
-app_name = "kirjat.ml scraper"
+app_name = "kirjat.ml"
 app_version = "1.0"
 app_start_wait = 0
 
@@ -29,11 +29,13 @@ def is_file_already_present(file):
     files = os.listdir()
     return file in files
 
+
 # Clean a string from ääkköset
 def clean(str):
     return str.replace(u'ä', "%E4").replace(u'ö', "%F6").replace(u'å', "%E5")
 
-# Getting the html                                        
+
+# Getting the html
 def request(url):
     clean_url = url
     headers = {
@@ -93,7 +95,9 @@ def get_products(page_soup, verbose=False):
         tuotteet.append(kirja(name, price, prices, conditions, id, img_href))
     return tuotteet
 
+
 kirjat_scrape_err = ""
+
 
 def scrape(bookname="Tekijä Pitkä matematiikka 3"):
     global store_url, store_url_search, kirjat_scrape_err
@@ -186,14 +190,18 @@ def scrape_from_file(filename):
     return result
 
 
-if __name__ == "__main__":
+def banner():
     print("    __ __  _        _         __                 __")
     print("   / //_/ (_)_____ (_)____ _ / /_    ____ ___   / /")
     print("  / ,<   / // ___// // __ `// __/   / __ `__ \ / / ")
     print(" / /| | / // /   / // /_/ // /_ _  / / / / / // /  ")
     print("/_/ |_|/_//_/ __/ / \__,_/ \__/(_)/_/ /_/ /_//_/  ")
     print("             /___/                                ")
-    print(app_name + " version " + app_version)
+
+
+if __name__ == "__main__":
+    banner()
+    print(app_name + " scraper version " + app_version)
     print("Licensed under the MIT-License by Elias Eskelinen 2020")
     print("Starting scraping in " + str(
         app_start_wait) + " seconds, please be adviced: this could be illegal in your region and time.")

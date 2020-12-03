@@ -1,10 +1,16 @@
+# -*- coding: utf-8 -*-
+# !/usr/bin/env python3
+# Script written by Elias Eskelinen aka Jonnelafin
+# This script has been licenced under the MIT-License
+
+import os
 from flask import Flask
 from flask_cors import CORS
 from flask import jsonify
 from flask import request
 
 import scraper
-from scraper import scrape
+from scraper import scrape, banner
 
 
 app = Flask(__name__)
@@ -43,6 +49,9 @@ def query():
         return jsonify( {"data": booklistTodictList(books), "err" : scraper.clean(scraper.kirjat_scrape_err)} )
     return "400: Query form must contain the key \"query\"", 400
 if __name__ == '__main__':
+    banner()
+    print(scraper.app_name + " api version " + scraper.app_version)
+    print("Licensed under the MIT-License by Elias Eskelinen 2020")
     # Bind to PORT if defined, otherwise default to 5000.
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
