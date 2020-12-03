@@ -20,6 +20,10 @@ CORS(app)
 
 c = 0
 
+cache = {}
+
+flag_nocache = False
+
 def booklistTodictList(books):
     out = []
     for i in books:
@@ -45,8 +49,18 @@ def helloWorld():
 def query():
     print(request.form)
     if 'query' in request.form.keys():
-        books = scrape(request.form.get('query'))
-        return jsonify( {"data": booklistTodictList(books), "err" : scraper.clean(scraper.kirjat_scrape_err)} )
+        bookname = request.form.get('query')
+        usedCache = False
+        if not bookname in cache.keys() or flag_nocache:
+            print("\"" + bookname + "\" not in cache, scraping...")
+            books = scrape(bookname)
+            err = scraper.clean(scraper.kirjat_scrape_err)
+            cache[bookname] = (books, err)
+        else:
+            usedCache = True
+            print("\"" + bookname + "\" in cache.")
+            books, err = cache[bookname]
+        return jsonify({"data": booklistTodictList(books), "cached_result": usedCache, "err": err})
     return "400: Query form must contain the key \"query\"", 400
 if __name__ == '__main__':
     banner()
