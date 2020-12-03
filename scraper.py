@@ -12,7 +12,7 @@ import os, time, sys
 from kirja import *
 
 # App meta
-app_name = "hinnat.ml scraper"
+app_name = "kirjat.ml scraper"
 app_version = "1.0"
 app_start_wait = 0
 
@@ -80,11 +80,10 @@ def get_products(page_soup, verbose=False):
         tuotteet.append(kirja(name, price, prices, conditions, "kuva"))
     return tuotteet
 
-def scrape():
+def scrape(bookname = "Tekijä Pitkä matematiikka 3"):
     global store_url, store_url_search
     print("Getting the HTML...")
-    book = "Tekijä Pitkä matematiikka 3"
-    booko = "Tekijä Pitkä matematiikka 3"
+    book = bookname
     book = book.replace(u'ä', "%E4")
     book = book.replace(u'ö', "%F6")
     soup = request(store_url_search + book)
@@ -96,12 +95,17 @@ def scrape():
         print(soup)
     ind = 0
     for i in products:
-        diff = set(i.name).difference(set(booko))
+        diff = set(i.name).difference(set(bookname))
         dif = len(diff) + ind*4
         print(str(i) + " | " + str(dif))
         ind += 1
     print("Parsing the HTML for products...OK")
 
+def parse_error(soup):
+    errors = soup.find_all('div', {'class': 'error'})
+    if len(errors) < 1:
+        return ""
+    return errors[0].text
 def scrape_from_file(filename):
     result = []
     lines = ""
@@ -140,13 +144,12 @@ def scrape_from_file(filename):
     print(str(total) + " in total.")
     return result
 if __name__ == "__main__":
-    print("  _    _ _                   _               _ ")
-    print(" | |  | (_)                 | |             | |")
-    print(" | |__| |_ _ __  _ __   __ _| |_   _ __ ___ | |")
-    print(" |  __  | | '_ \| '_ \ / _` | __| | '_ ` _ \| |")
-    print(" | |  | | | | | | | | | (_| | |_ _| | | | | | |")
-    print(" |_|  |_|_|_| |_|_| |_|\__,_|\__(_)_| |_| |_|_|")
-    print("-----------------------------------------------")
+    print("    __ __ _      _       __              __")
+    print("   / //_/(_)____(_)___ _/ /_  ____ ___  / /")
+    print("  / ,<  / / ___/ / __ `/ __/ / __ `__ \/ / ")
+    print(" / /| |/ / /  / / /_/ / /__ / / / / / / /  ")
+    print("/_/ |_/_/_/__/ /\__,_/\__(_)_/ /_/ /_/_/   ")
+    print("          /___/                            ")
     print(app_name + " version " + app_version)
     print("Licensed under the MIT-License by Elias Eskelinen 2020")
     print("Starting scraping in " + str(
@@ -166,6 +169,6 @@ if __name__ == "__main__":
         else:
             print("File not found.")
     else:
-        scrape()
+        scrape(input("Query: "))
 
     print("Scrape finished")
