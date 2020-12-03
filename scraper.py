@@ -144,12 +144,12 @@ def scrape_from_file(filename):
     print(str(total) + " in total.")
     return result
 if __name__ == "__main__":
-    print("    __ __ _      _       __              __")
-    print("   / //_/(_)____(_)___ _/ /_  ____ ___  / /")
-    print("  / ,<  / / ___/ / __ `/ __/ / __ `__ \/ / ")
-    print(" / /| |/ / /  / / /_/ / /__ / / / / / / /  ")
-    print("/_/ |_/_/_/__/ /\__,_/\__(_)_/ /_/ /_/_/   ")
-    print("          /___/                            ")
+    print("    __ __  _        _         __                 __")
+    print("   / //_/ (_)_____ (_)____ _ / /_    ____ ___   / /")
+    print("  / ,<   / // ___// // __ `// __/   / __ `__ \ / / ")
+    print(" / /| | / // /   / // /_/ // /_ _  / / / / / // /  ")
+    print("/_/ |_|/_//_/ __/ / \__,_/ \__/(_)/_/ /_/ /_//_/  ")
+    print("             /___/                                ")
     print(app_name + " version " + app_version)
     print("Licensed under the MIT-License by Elias Eskelinen 2020")
     print("Starting scraping in " + str(
