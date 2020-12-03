@@ -63,6 +63,7 @@ def get_products(page_soup, verbose=False):
         prices = []
         condition = ""
         conditions = []
+        id = 0
         for radio in product_possible_price:
             product_price = radio.find_all('label')
             if len(product_price) > 0:
@@ -83,7 +84,10 @@ def get_products(page_soup, verbose=False):
         name = ""
         if len(product_name) > 0:
             name = product_name[0].text
-        tuotteet.append(kirja(name, price, prices, conditions, img_href))
+            ids = product_name[0].parent.findAll("a")
+            if len(ids) > 1:
+                id = ids[0]["name"]
+        tuotteet.append(kirja(name, price, prices, conditions, id, img_href))
     return tuotteet
 
 

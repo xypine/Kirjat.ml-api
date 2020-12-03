@@ -6,11 +6,12 @@ class kirja:
     conditions = []
     id = ""
     link = ""
-    def __init__(self, name="", price=-1, prices = [], conditions = [], image=""):
+    def __init__(self, name="", price=-1, prices = [], conditions = [], id = -1, image=""):
         self.name = name
         self.price = price
         self.prices = prices
         self.conditions = conditions
+        self.id = id
         self.image = image
     def __str__(self):
         condition = "NA"
@@ -19,4 +20,4 @@ class kirja:
         price = self.price
         if len(self.prices) > 0:
             price = self.prices[-1]
-        return "Kirja(" + self.name + ":" + str(condition) + ":" + str(price) + ")"
+        return "Kirja(" + str(self.id) + "|" + self.name + "|" + str(condition) + "|" + str(price) + ")"
