@@ -29,6 +29,9 @@ def is_file_already_present(file):
     files = os.listdir()
     return file in files
 
+# Clean a string from ääkköset
+def clean(str):
+    return str.replace(u'ä', "%E4").replace(u'ö', "%F6").replace(u'å', "%E5")
 
 # Getting the html                                        
 def request(url):
@@ -90,13 +93,13 @@ def get_products(page_soup, verbose=False):
         tuotteet.append(kirja(name, price, prices, conditions, id, img_href))
     return tuotteet
 
+kirjat_scrape_err = ""
 
 def scrape(bookname="Tekijä Pitkä matematiikka 3"):
-    global store_url, store_url_search
+    global store_url, store_url_search, kirjat_scrape_err
     print("Getting the HTML...")
     book = bookname
-    book = book.replace(u'ä', "%E4")
-    book = book.replace(u'ö', "%F6")
+    book = clean(book)
     soup = request(store_url_search + book)
     print("Getting the HTML...OK")
     print("Parsing the HTML for products...")
@@ -108,6 +111,7 @@ def scrape(bookname="Tekijä Pitkä matematiikka 3"):
             print(soup)
         else:
             print("Store returned this error: ")
+            kirjat_scrape_err = err
             print(err)
     ind = 0
     best = kirja()
@@ -133,6 +137,7 @@ def scrape(bookname="Tekijä Pitkä matematiikka 3"):
     print("Parsing the HTML for products...OK")
     return products
 
+
 def parse_error(soup):
     errors = soup.find_all('div', {'class': 'error'})
     if len(errors) < 1:
@@ -149,8 +154,7 @@ def scrape_from_file(filename):
     for i in lines:
         bookname = i.replace("\n", "")
         booknameo = i.replace("\n", "")
-        bookname = bookname.replace(u'ä', "%E4")
-        bookname = bookname.replace(u'ö', "%F6")
+        bookname = clean(bookname)
         #        bookname = urlencode(bookname, quote_via=quote_plus)
         #        print("Encoding " + str(bookname) + "...")
         #        bookname = bookname.encode('windows-1250')
