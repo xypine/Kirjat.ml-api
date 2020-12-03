@@ -51,10 +51,14 @@ def get_products(page_soup, verbose=False):
         print("Found " + str(len(containers)) + " product containers.")
     tuotteet = []
     for container in containers:
-        product_images = container.find_all('table', {'class': 'kuva'})
+        product_images = container.find_all('img', {'class': 'tuote_kuva'}, recursive=True)
         product_name = container.find_all('a', {'class': 'otsikko'}, recursive=True)
         product_possible_price = container.find_all('td', {'class': 'radio'})
 
+        img_href = ""
+        if len(product_images) > 0:
+            img = product_images[0]
+            img_href = store_url + "/" + img['src']
         price = -1
         prices = []
         condition = ""
@@ -79,7 +83,7 @@ def get_products(page_soup, verbose=False):
         name = ""
         if len(product_name) > 0:
             name = product_name[0].text
-        tuotteet.append(kirja(name, price, prices, conditions, "kuva"))
+        tuotteet.append(kirja(name, price, prices, conditions, img_href))
     return tuotteet
 
 
@@ -97,11 +101,25 @@ def scrape(bookname="Tekijä Pitkä matematiikka 3"):
         print("Apparently no products were found, here is the HTML for debugging:")
         print(soup)
     ind = 0
+    best = kirja()
+    bestDiff = 99999999
+    ind = 0
     for i in products:
         diff = set(i.name).difference(set(bookname))
         dif = len(diff) + ind * 4
         print(str(i) + " | " + str(dif))
+
+        if i.price > -1:
+            diff = set(i.name).difference(set(bookname))
+            diff2 = abs(len(bookname) - len(i.name))
+            dif = len(diff) + ind * 4
+            if dif < bestDiff:
+                bestDiff = dif
+                best = i
+                print(dif)
         ind += 1
+    print("\n\nBest match: " + str(best))
+    print("Best match image: " + best.image)
     print("Parsing the HTML for products...OK")
 
 

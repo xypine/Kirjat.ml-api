@@ -4,6 +4,8 @@ class kirja:
     name = "Ei Nimeä?"
     prices = []
     conditions = []
+    id = ""
+    link = ""
     def __init__(self, name="", price=-1, prices = [], conditions = [], image=""):
         self.name = name
         self.price = price
