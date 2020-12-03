@@ -34,7 +34,7 @@ def helloWorld():
     view = "<title>Kirjat.ml</title>"
     global c
     c = c + 1
-    view = view + "<h2> Kirjat.ml </h2>"
+    view = view + "<h2> Kirjat.ml api </h2>"
     view = view + "<hr \>"
     view = view + "<form action=\" " + "/api/v1" + "\" method=\"post\">"
     view = view + "<input type=\"text\" name=\"query\">"
@@ -42,7 +42,7 @@ def helloWorld():
     view = view + "</form>"
     view += "<a href=\"/batch\"> Try batch query instead </a>"
     view = view + "<br \\><hr \\>"
-    view = view + "Kirjat.ml v. " + str(scraper.app_version) + " | <a href=\"https://raw.githubusercontent.com/jonnelafin/A-/master/LICENSE\">LICENSE</a>"
+    view = view + "Kirjat.ml api v. " + str(scraper.app_version) + " | <a href=\"https://raw.githubusercontent.com/jonnelafin/A-/master/LICENSE\">LICENSE</a>"
     view += "<p>App status: " + str(app_status) + "</p>"
     view += str(c) + " Requests since last boot"
     return view
@@ -51,7 +51,7 @@ def batch():
     view = "<title>Kirjat.ml batch query</title>"
     global c
     c = c + 1
-    view = view + "<h2> Kirjat.ml batch query</h2>"
+    view = view + "<h2> Kirjat.ml api batch query</h2>"
     view = view + "<hr \>"
     view = view + "<form action=\" " + "/api/v1" + "\" method=\"post\">"
     view = view + "<textarea name=\"querym\" rows=\"10\" cols=\"80\"> Type your books here, each on it's own line </textarea>"
@@ -60,7 +60,7 @@ def batch():
     view = view + "</form>"
     view += "<a href=\"/\"> Back </a>"
     view = view + "<br \\><hr \\>"
-    view = view + "Kirjat.ml v. " + str(scraper.app_version) + " | <a href=\"https://raw.githubusercontent.com/jonnelafin/A-/master/LICENSE\">LICENSE</a>"
+    view = view + "Kirjat.ml api v. " + str(scraper.app_version) + " | <a href=\"https://raw.githubusercontent.com/jonnelafin/A-/master/LICENSE\">LICENSE</a>"
     view += "<p>App status: " + str(app_status) + "</p>"
     view += str(c) + " Requests since last boot"
     return view
