@@ -21,3 +21,10 @@ class kirja:
         if len(self.prices) > 0:
             price = self.prices[-1]
         return "Kirja(" + str(self.id) + "|" + self.name + "|" + str(condition) + "|" + str(price) + ")"
+    def price_to_e(self, price):
+        if len(str(price)) < 4:
+            return str(price)
+        p = str(price)
+        return p[:len(p)-2] + "," + p[-2:]
+    def my_price_to_e(self):
+        return self.price_to_e(self.price)

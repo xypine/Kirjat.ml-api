@@ -129,6 +129,7 @@ def scrape(bookname="Tekijä Pitkä matematiikka 3"):
         ind += 1
     print("\n\nBest match: " + str(best))
     print("Best match image: " + best.image)
+    print("Best match price: " + best.my_price_to_e())
     print("Parsing the HTML for products...OK")
 
 
@@ -174,7 +175,10 @@ def scrape_from_file(filename):
             ind += 1
         result.append(best)
         total += best.price
-    print(str(total) + " in total.")
+    print("-----------------------")
+    print(kirja().price_to_e(total) + "e in total. ")
+    print("( " + str(total) + " )")
+    print("-----------------------")
     return result
 
 
