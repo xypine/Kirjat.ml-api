@@ -36,16 +36,35 @@ def helloWorld():
     c = c + 1
     view = view + "<h2> Kirjat.ml </h2>"
     view = view + "<hr \>"
-    view = view + "<form action=\" " + "/query" + "\" method=\"post\">"
+    view = view + "<form action=\" " + "/api/v1" + "\" method=\"post\">"
     view = view + "<input type=\"text\" name=\"query\">"
     view = view + "<input type=\"submit\">"
     view = view + "</form>"
+    view += "<a href=\"/batch\"> Try batch query instead </a>"
     view = view + "<br \\><hr \\>"
     view = view + "Kirjat.ml v. " + str(scraper.app_version) + " | <a href=\"https://raw.githubusercontent.com/jonnelafin/A-/master/LICENSE\">LICENSE</a>"
     view += "<p>App status: " + str(app_status) + "</p>"
     view += str(c) + " Requests since last boot"
     return view
-@app.route("/query", methods=['POST'])
+@app.route("/batch")
+def batch():
+    view = "<title>Kirjat.ml batch query</title>"
+    global c
+    c = c + 1
+    view = view + "<h2> Kirjat.ml batch query</h2>"
+    view = view + "<hr \>"
+    view = view + "<form action=\" " + "/api/v1" + "\" method=\"post\">"
+    view = view + "<textarea name=\"querym\" rows=\"10\" cols=\"80\"> Type your books here, each on it's own line </textarea>"
+    view += "<br><br>"
+    view = view + "<input type=\"submit\">"
+    view = view + "</form>"
+    view += "<a href=\"/\"> Back </a>"
+    view = view + "<br \\><hr \\>"
+    view = view + "Kirjat.ml v. " + str(scraper.app_version) + " | <a href=\"https://raw.githubusercontent.com/jonnelafin/A-/master/LICENSE\">LICENSE</a>"
+    view += "<p>App status: " + str(app_status) + "</p>"
+    view += str(c) + " Requests since last boot"
+    return view
+@app.route("/api/v1", methods=['POST'])
 def query():
     print(request.form)
     if 'query' in request.form.keys():
@@ -61,6 +80,24 @@ def query():
             print("\"" + bookname + "\" in cache.")
             books, err = cache[bookname]
         return jsonify({"data": booklistTodictList(books), "cached_result": usedCache, "err": err})
+    if 'querym' in request.form.keys():
+        booknames = request.form.get('querym').split("\n")
+        print("Queries: " + str(booknames))
+        result = []
+        for book in booknames:
+            bookname = book.replace("\r", "").replace("\n", "")
+            usedCache = False
+            if not bookname in cache.keys() or flag_nocache:
+                print("\"" + bookname + "\" not in cache, scraping...")
+                books = scrape(bookname)
+                err = scraper.clean(scraper.kirjat_scrape_err)
+                cache[bookname] = (books, err)
+            else:
+                usedCache = True
+                print("\"" + bookname + "\" in cache.")
+                books, err = cache[bookname]
+            result.append({"data": booklistTodictList(books), "cached_result": usedCache, "err": err})
+        return jsonify(result)
     return "400: Query form must contain the key \"query\"", 400
 if __name__ == '__main__':
     banner()
