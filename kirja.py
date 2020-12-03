@@ -28,3 +28,13 @@ class kirja:
         return p[:len(p)-2] + "," + p[-2:]
     def my_price_to_e(self):
         return self.price_to_e(self.price)
+
+    def to_dict(self):
+        return {"image": self.image,
+                "price" : self.price,
+                "name" : self.name,
+                "prices" : self.prices,
+                "conditions" : self.conditions,
+                "id" : self.id,
+                "link" : self.link,
+                }

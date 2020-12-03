@@ -131,7 +131,7 @@ def scrape(bookname="Tekijä Pitkä matematiikka 3"):
     print("Best match image: " + best.image)
     print("Best match price: " + best.my_price_to_e())
     print("Parsing the HTML for products...OK")
-
+    return products
 
 def parse_error(soup):
     errors = soup.find_all('div', {'class': 'error'})
