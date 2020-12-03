@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 # Script written by Elias Eskelinen aka Jonnelafin
+# This script has been licenced under the MIT-License
 
 # import the libraries
 from bs4 import BeautifulSoup as soup
@@ -32,7 +33,8 @@ def is_file_already_present(file):
 # Getting the html                                        
 def request(url):
     clean_url = url
-    headers = {"Accept-Language": "fi-FI,fi;q=0.8,en-US;q=0.5,en;q=0.3"} #{"Accept-Language": store_lang + "," + store_lang_short + ";q=0.1"} #fi-FI,fi;q=0.8,en-US;q=0.5,en;q=0.3
+    headers = {
+        "Accept-Language": "fi-FI,fi;q=0.8,en-US;q=0.5,en;q=0.3"}  # {"Accept-Language": store_lang + "," + store_lang_short + ";q=0.1"} #fi-FI,fi;q=0.8,en-US;q=0.5,en;q=0.3
     response = requests.get(clean_url, headers=headers)
     page_html = response.text
     page_soup = soup(page_html, 'html.parser')
@@ -70,7 +72,7 @@ def get_products(page_soup, verbose=False):
                 if len(price_possible) > 0:
                     try:
                         p = int(price_possible[0].text.replace("€", "").replace(",", ""))
-                        price = p # 13,30 € -> 1330
+                        price = p  # 13,30 € -> 1330
                         prices.append(p)
                     except Exception as e:
                         price = -2
@@ -80,7 +82,8 @@ def get_products(page_soup, verbose=False):
         tuotteet.append(kirja(name, price, prices, conditions, "kuva"))
     return tuotteet
 
-def scrape(bookname = "Tekijä Pitkä matematiikka 3"):
+
+def scrape(bookname="Tekijä Pitkä matematiikka 3"):
     global store_url, store_url_search
     print("Getting the HTML...")
     book = bookname
@@ -96,16 +99,19 @@ def scrape(bookname = "Tekijä Pitkä matematiikka 3"):
     ind = 0
     for i in products:
         diff = set(i.name).difference(set(bookname))
-        dif = len(diff) + ind*4
+        dif = len(diff) + ind * 4
         print(str(i) + " | " + str(dif))
         ind += 1
     print("Parsing the HTML for products...OK")
+
 
 def parse_error(soup):
     errors = soup.find_all('div', {'class': 'error'})
     if len(errors) < 1:
         return ""
     return errors[0].text
+
+
 def scrape_from_file(filename):
     result = []
     lines = ""
@@ -117,10 +123,10 @@ def scrape_from_file(filename):
         booknameo = i.replace("\n", "")
         bookname = bookname.replace(u'ä', "%E4")
         bookname = bookname.replace(u'ö', "%F6")
-#        bookname = urlencode(bookname, quote_via=quote_plus)
-#        print("Encoding " + str(bookname) + "...")
-#        bookname = bookname.encode('windows-1250')
-#        bookname = bookname.decode('latin-1')
+        #        bookname = urlencode(bookname, quote_via=quote_plus)
+        #        print("Encoding " + str(bookname) + "...")
+        #        bookname = bookname.encode('windows-1250')
+        #        bookname = bookname.decode('latin-1')
         soup = request(store_url_search + str(bookname))
         print("Scraping " + str(store_url_search + str(bookname)))
         products = get_products(soup, True)
@@ -131,18 +137,20 @@ def scrape_from_file(filename):
             if b.price > -1:
                 diff = set(b.name).difference(set(booknameo))
                 diff2 = abs(len(booknameo) - len(b.name))
-                dif = len(diff) + ind*4
+                dif = len(diff) + ind * 4
                 if dif < bestDiff:
                     bestDiff = dif
                     best = b
                     print(dif)
-#                result.append(b)
-#                break
+            #                result.append(b)
+            #                break
             ind += 1
         result.append(best)
         total += best.price
     print(str(total) + " in total.")
     return result
+
+
 if __name__ == "__main__":
     print("    __ __  _        _         __                 __")
     print("   / //_/ (_)_____ (_)____ _ / /_    ____ ___   / /")
