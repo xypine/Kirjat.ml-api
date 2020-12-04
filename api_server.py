@@ -79,7 +79,7 @@ def query():
             usedCache = True
             print("\"" + bookname + "\" in cache.")
             books, err = cache[bookname]
-        return jsonify({"data": booklistTodictList(books), "cached_result": usedCache, "err": err})
+        return jsonify({"data": booklistTodictList(books), "cached_result": usedCache, "err": err, "query": bookname})
     if 'querym' in request.form.keys():
         booknames = request.form.get('querym').split("\n")
         print("Queries: " + str(booknames))
@@ -96,9 +96,9 @@ def query():
                 usedCache = True
                 print("\"" + bookname + "\" in cache.")
                 books, err = cache[bookname]
-            result.append({"data": booklistTodictList(books), "cached_result": usedCache, "err": err})
+            result.append({"data": booklistTodictList(books), "cached_result": usedCache, "err": err, "query": booknames})
         return jsonify(result)
-    return "400: Query form must contain the key \"query\"", 400
+    return "400: Query form must contain the key \"query\" or \"querym\"", 400
 if __name__ == '__main__':
     banner()
     print(scraper.app_name + " api version " + scraper.app_version)
