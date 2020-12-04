@@ -103,18 +103,28 @@ def query():
             result.append({"data": booklistTodictList(books), "cached_result": usedCache, "err": err, "query": query})
         return jsonify(result)
     return jsonify({"code": 400, "reason": "400: Query form must contain the key \"query\" or \"querym\"", "stacktrace": ""}), 400
+
+imgCache = {}
 @app.route("/api/v1_img|<url>")
 def img(url):
-    try:
-        if not "kauppa.jamera.net" in str(base64.b64decode(bytes(url, 'utf-8'))):
-            return jsonify({"code": 403, "reason": "invalid url domain", "stacktrace": ""}), 404
+    if not url in imgCache.keys() or flag_nocache:
         try:
-            uri = scraper.request_img(url)
-            return str(uri)
+            if not "kauppa.jamera.net" in str(base64.b64decode(bytes(url, 'utf-8'))):
+                res = jsonify({"code": 403, "reason": "invalid url domain", "stacktrace": ""}), 404
+                imgCache[url] = res
+                return res
+            try:
+                uri = scraper.request_img(url)
+                imgCache[url] = uri
+                return str(uri)
+            except Exception as e:
+                res = jsonify({"code" : 404, "reason": "malformed url", "stacktrace": str(e)}), 404
+                imgCache[url] = res
+                return res
         except Exception as e:
-            return jsonify({"code" : 404, "reason": "malformed url", "stacktrace": str(e)}), 404
-    except Exception as e:
-        return jsonify({"code" : 500, "reason": "?", "stacktrace": str(e)}), 500
+            res = jsonify({"code" : 500, "reason": "?", "stacktrace": str(e)}), 500
+            imgCache[url] = res
+            return res
 if __name__ == '__main__':
     banner()
     print(scraper.app_name + " api version " + scraper.app_version)
