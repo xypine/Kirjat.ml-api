@@ -84,10 +84,10 @@ def query():
         booknames = request.form.get('querym').split("\n")
         print("Queries: " + str(booknames))
         result = []
-		query = []
+        query = []
         for book in booknames:
             bookname = book.replace("\r", "").replace("\n", "")
-			query.append(bookname)
+            query.append(bookname)
             usedCache = False
             if not bookname in cache.keys() or flag_nocache:
                 print("\"" + bookname + "\" not in cache, scraping...")
