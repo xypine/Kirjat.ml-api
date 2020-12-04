@@ -51,7 +51,7 @@ def request_img(url):
     response = requests.get(base64.b64decode(url))
     uri = ("data:" +
            response.headers['Content-Type'] + ";" +
-           "base64," + str(base64.b64encode(response.content)))
+           "base64," + str(base64.b64encode(response.content).encode("utf-8")))
     return uri
 def get_products(page_soup, verbose=False):
     if len(page_soup.find_all('table', {'class': 'tuotteet_flex'})) < 1:
