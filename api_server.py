@@ -9,6 +9,8 @@ from flask_cors import CORS
 from flask import jsonify
 from flask import request
 
+import base64
+
 import scraper
 from scraper import scrape, banner
 
@@ -100,7 +102,19 @@ def query():
                 books, err = cache[bookname]
             result.append({"data": booklistTodictList(books), "cached_result": usedCache, "err": err, "query": query})
         return jsonify(result)
-    return "400: Query form must contain the key \"query\" or \"querym\"", 400
+    return jsonify({"code": 400, "reason": "400: Query form must contain the key \"query\" or \"querym\"", "stacktrace": ""}), 400
+@app.route("/api/v1_img|<url>")
+def img(url):
+    try:
+        if not "kauppa.jamera.net" in str(base64.b64decode(bytes(url, 'utf-8'))):
+            return jsonify({"code": 403, "reason": "invalid url domain", "stacktrace": ""}), 404
+        try:
+            uri = scraper.request_img(url)
+            return str(uri)
+        except Exception as e:
+            return jsonify({"code" : 404, "reason": "malformed url", "stacktrace": str(e)}), 404
+    except Exception as e:
+        return jsonify({"code" : 500, "reason": "?", "stacktrace": str(e)}), 500
 if __name__ == '__main__':
     banner()
     print(scraper.app_name + " api version " + scraper.app_version)

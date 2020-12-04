@@ -9,6 +9,9 @@ from urllib.parse import urlencode, quote_plus
 import requests
 import os, time, sys
 
+# Base64 for images
+import base64
+
 # import internal libraries
 from kirja import *
 
@@ -44,8 +47,12 @@ def request(url):
     page_html = response.text
     page_soup = soup(page_html, 'html.parser')
     return page_soup
-
-
+def request_img(url):
+    response = requests.get(base64.b64decode(url))
+    uri = ("data:" +
+           response.headers['Content-Type'] + ";" +
+           "base64," + str(base64.b64encode(response.content)))
+    return uri
 def get_products(page_soup, verbose=False):
     if len(page_soup.find_all('table', {'class': 'tuotteet_flex'})) < 1:
         print("Failed to find the product container from the provided HTML, returning an empty array.")
