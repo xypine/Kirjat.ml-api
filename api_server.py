@@ -110,7 +110,7 @@ def img(url):
     if not url in imgCache.keys() or flag_nocache:
         try:
             if not "kauppa.jamera.net" in str(base64.b64decode(bytes(url, 'utf-8'))):
-                res = jsonify({"code": 403, "reason": "invalid url domain", "stacktrace": ""}), 404
+                res = jsonify({"code": 403, "reason": "invalid url domain", "stacktrace": "with url: " + url}), 404
                 imgCache[url] = res
                 return res
             try:
@@ -125,6 +125,8 @@ def img(url):
             res = jsonify({"code" : 500, "reason": "?", "stacktrace": str(e)}), 500
             imgCache[url] = res
             return res
+    else:
+        return imgCache[url]
 if __name__ == '__main__':
     banner()
     print(scraper.app_name + " api version " + scraper.app_version)
