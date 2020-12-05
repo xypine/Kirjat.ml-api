@@ -79,12 +79,14 @@ def query():
             usedCache = True
             print("\"" + bookname + "\" in cache.")
             books, err = cache[bookname]
+        scraper.kirjat_scrape_err = ""
         return jsonify({"data": booklistTodictList(books), "cached_result": usedCache, "err": err})
     if 'querym' in request.form.keys():
         booknames = request.form.get('querym').split("\n")
         print("Queries: " + str(booknames))
         result = []
         for book in booknames:
+            scraper.kirjat_scrape_err = ""
             bookname = book.replace("\r", "").replace("\n", "")
             usedCache = False
             if not bookname in cache.keys() or flag_nocache:
@@ -96,6 +98,7 @@ def query():
                 usedCache = True
                 print("\"" + bookname + "\" in cache.")
                 books, err = cache[bookname]
+                scraper.kirjat_scrape_err = ""
             result.append({"data": booklistTodictList(books), "cached_result": usedCache, "err": err})
         return jsonify(result)
     return "400: Query form must contain the key \"query\"", 400
