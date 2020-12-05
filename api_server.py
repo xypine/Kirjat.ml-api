@@ -9,6 +9,8 @@ from flask_cors import CORS
 from flask import jsonify
 from flask import request
 
+import base64
+
 import scraper
 from scraper import scrape, banner
 
@@ -80,14 +82,16 @@ def query():
             print("\"" + bookname + "\" in cache.")
             books, err = cache[bookname]
         scraper.kirjat_scrape_err = ""
-        return jsonify({"data": booklistTodictList(books), "cached_result": usedCache, "err": err})
+        return jsonify({"data": booklistTodictList(books), "cached_result": usedCache, "err": err, "query": bookname})
     if 'querym' in request.form.keys():
         booknames = request.form.get('querym').split("\n")
         print("Queries: " + str(booknames))
         result = []
+        query = []
         for book in booknames:
             scraper.kirjat_scrape_err = ""
             bookname = book.replace("\r", "").replace("\n", "")
+            query.append(bookname)
             usedCache = False
             if not bookname in cache.keys() or flag_nocache:
                 print("\"" + bookname + "\" not in cache, scraping...")
@@ -99,9 +103,33 @@ def query():
                 print("\"" + bookname + "\" in cache.")
                 books, err = cache[bookname]
                 scraper.kirjat_scrape_err = ""
-            result.append({"data": booklistTodictList(books), "cached_result": usedCache, "err": err})
+            result.append({"data": booklistTodictList(books), "cached_result": usedCache, "err": err, "query": query})
         return jsonify(result)
-    return "400: Query form must contain the key \"query\"", 400
+    return jsonify({"code": 400, "reason": "400: Query form must contain the key \"query\" or \"querym\"", "stacktrace": ""}), 400
+
+imgCache = {}
+@app.route("/api/v1_img|<url>")
+def img(url):
+    if not url in imgCache.keys() or flag_nocache:
+        try:
+            if not "kauppa.jamera.net" in str(base64.b64decode(bytes(url, 'utf-8'))):
+                res = jsonify({"code": 403, "reason": "invalid url domain", "stacktrace": "with url: " + url}), 404
+                imgCache[url] = res
+                return res
+            try:
+                uri = scraper.request_img(url)
+                imgCache[url] = uri
+                return str(uri)
+            except Exception as e:
+                res = jsonify({"code" : 404, "reason": "malformed url", "stacktrace": str(e)}), 404
+                imgCache[url] = res
+                return res
+        except Exception as e:
+            res = jsonify({"code" : 500, "reason": "?", "stacktrace": str(e)}), 500
+            imgCache[url] = res
+            return res
+    else:
+        return imgCache[url]
 if __name__ == '__main__':
     banner()
     print(scraper.app_name + " api version " + scraper.app_version)
