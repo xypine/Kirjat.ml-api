@@ -139,7 +139,6 @@ def query():
                 scraper.kirjat_scrape_err = ""
             result.append({"data": booklistTodictList(books), "cached_result": usedCache, "err": err, "query": query})
         return jsonify(result)
-    return jsonify({"code": 400, "reason": "400: Query form must contain the key \"query\" or \"querym\"", "stacktrace": ""}), 400
     if 'querymsan' in request.form.keys():
         booknames = request.form.get('querymsan').split("\n")
         print("Queries: " + str(booknames))
