@@ -140,6 +140,29 @@ def query():
             result.append({"data": booklistTodictList(books), "cached_result": usedCache, "err": err, "query": query})
         return jsonify(result)
     return jsonify({"code": 400, "reason": "400: Query form must contain the key \"query\" or \"querym\"", "stacktrace": ""}), 400
+    if 'querymsan' in request.form.keys():
+        booknames = request.form.get('querymsan').split("\n")
+        print("Queries: " + str(booknames))
+        result = []
+        query = []
+        for book in booknames:
+            scraper.kirjat_scrape_err = ""
+            bookname = book.replace("\r", "").replace("\n", "")
+            query.append(bookname)
+            usedCache = False
+            if not bookname in cache_san.keys() or flag_nocache:
+                print("\"" + bookname + "\" not in cache, scraping...")
+                books = scrape_san(bookname)
+                err = scraper.clean(scraper.kirjat_scrape_err)
+                cache_san[bookname] = (books, err)
+            else:
+                usedCache = True
+                print("\"" + bookname + "\" in cache.")
+                books, err = cache_san[bookname]
+                scraper.kirjat_scrape_err = ""
+            result.append({"data": booklistTodictList(books), "cached_result": usedCache, "err": err, "query": query})
+        return jsonify(result)
+    return jsonify({"code": 400, "reason": "400: Query form must contain the key \"query\" or \"querym\"", "stacktrace": ""}), 400
 
 
 imgCache = {}
