@@ -12,7 +12,7 @@ from flask import request
 import base64
 
 import scraper
-from scraper import scrape_jam, banner
+from scraper import scrape_jam, banner, scrape_san
 
 
 app = Flask(__name__)
@@ -23,6 +23,7 @@ CORS(app)
 c = 0
 
 cache = {}
+cache_san = {}
 
 flag_nocache = False
 
@@ -48,6 +49,7 @@ def helloWorld():
     view += "<p>App status: " + str(app_status) + "</p>"
     view += str(c) + " Requests since last boot"
     return view
+    
 @app.route("/batch")
 def batch():
     view = "<title>Kirjat.ml batch query</title>"
@@ -61,6 +63,24 @@ def batch():
     view = view + "<input type=\"submit\">"
     view = view + "</form>"
     view += "<a href=\"/\"> Back </a>"
+    view = view + "<br \\><hr \\>"
+    view = view + "Kirjat.ml api v. " + str(scraper.app_version) + " | <a href=\"https://raw.githubusercontent.com/jonnelafin/A-/master/LICENSE\">LICENSE</a>"
+    view += "<p>App status: " + str(app_status) + "</p>"
+    view += str(c) + " Requests since last boot"
+    return view
+
+@app.route("/sanoma")
+def san():
+    view = "<title>Kirjat.ml sanomapro edition</title>"
+    global c
+    c = c + 1
+    view = view + "<h2> Kirjat.ml api sanomapro edition</h2>"
+    view = view + "<hr \>"
+    view = view + "<form action=\" " + "/api/v1" + "\" method=\"post\">"
+    view = view + "<input type=\"text\" name=\"querysan\">"
+    view = view + "<input type=\"submit\">"
+    view = view + "</form>"
+    view += "<a href=\"/batch\"> Try batch query instead </a>"
     view = view + "<br \\><hr \\>"
     view = view + "Kirjat.ml api v. " + str(scraper.app_version) + " | <a href=\"https://raw.githubusercontent.com/jonnelafin/A-/master/LICENSE\">LICENSE</a>"
     view += "<p>App status: " + str(app_status) + "</p>"
@@ -81,6 +101,20 @@ def query():
             usedCache = True
             print("\"" + bookname + "\" in cache.")
             books, err = cache[bookname]
+        scraper.kirjat_scrape_err = ""
+        return jsonify({"data": booklistTodictList(books), "cached_result": usedCache, "err": err, "query": bookname})
+    if 'querysan' in request.form.keys():
+        bookname = request.form.get('querysan')
+        usedCache = False
+        if not bookname in cache_san.keys() or flag_nocache:
+            print("\"" + bookname + "\" not in cache, scraping...")
+            books = scrape_san(bookname)
+            err = scraper.clean(scraper.kirjat_scrape_err)
+            cache_san[bookname] = (books, err)
+        else:
+            usedCache = True
+            print("\"" + bookname + "\" in cache.")
+            books, err = cache_san[bookname]
         scraper.kirjat_scrape_err = ""
         return jsonify({"data": booklistTodictList(books), "cached_result": usedCache, "err": err, "query": bookname})
     if 'querym' in request.form.keys():
@@ -106,6 +140,7 @@ def query():
             result.append({"data": booklistTodictList(books), "cached_result": usedCache, "err": err, "query": query})
         return jsonify(result)
     return jsonify({"code": 400, "reason": "400: Query form must contain the key \"query\" or \"querym\"", "stacktrace": ""}), 400
+
 
 imgCache = {}
 @app.route("/api/v1_img|<url>")

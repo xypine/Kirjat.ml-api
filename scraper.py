@@ -12,6 +12,9 @@ import os, time, sys
 # Base64 for images
 import base64
 
+# json for sanomapro
+import json
+
 # import internal libraries
 from kirja import *
 
@@ -118,6 +121,13 @@ def get_products_san(page_soup, verbose=False, keyword=""):
     print("key: " + key)
     url = store_url_api_san + key + "?term=" + keyword + "&fuzzy=auto&page=1&limit=20&sort=relevance&order=desc"
     print("Making a request to " + url)
+    soup = request(url)
+    data = json.loads(str(soup))
+#    print("Data:")
+#    print(data)
+    books = data["hits"]
+    for i in books:
+        tuotteet.append(kirja(i["title"], i["score"], [], [], i["id"], i["images"]["main"], i["url"]))
     return tuotteet
 
 kirjat_scrape_err = ""
