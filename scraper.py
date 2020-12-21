@@ -68,9 +68,14 @@ def get_products(page_soup, verbose=False):
         product_possible_price = container.find_all('td', {'class': 'radio'})
 
         img_href = ""
+        link = ""
         if len(product_images) > 0:
             img = product_images[0]
             img_href = store_url + "/" + img['src']
+            try:
+                link = store_url + img.parent['href']
+            except Exception as e:
+                print("Couldn't get the link: " + e)
         price = -1
         prices = []
         condition = ""
@@ -99,7 +104,7 @@ def get_products(page_soup, verbose=False):
             ids = product_name[0].parent.findAll("a")
             if len(ids) > 1:
                 id = ids[0]["name"]
-        tuotteet.append(kirja(name, price, prices, conditions, id, img_href))
+        tuotteet.append(kirja(name, price, prices, conditions, id, img_href, link))
     return tuotteet
 
 
