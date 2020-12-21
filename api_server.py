@@ -129,7 +129,7 @@ def query():
             usedCache = False
             if not bookname in cache.keys() or flag_nocache:
                 print("\"" + bookname + "\" not in cache, scraping...")
-                books = scrape(bookname)
+                books = scrape_jam(bookname)
                 err = scraper.clean(scraper.kirjat_scrape_err)
                 cache[bookname] = (books, err)
             else:
