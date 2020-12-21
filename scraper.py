@@ -126,7 +126,7 @@ def get_price_san(url):
     out = []
     conditions = []
     for i in prices:
-        out.append(i.text.replace(",", "").replace("€", "").replace(" ","").replace("\xa0", "").replace(u'\xa0', ""))
+        out.append(int(i.text.replace(",", "").replace("€", "").replace(" ","").replace("\xa0", "").replace(u'\xa0', "")))
     for i in cond:
         conditions.append(i.text)
     if out == []:
