@@ -115,6 +115,24 @@ def get_products_jam(page_soup, verbose=False):
         tuotteet.append(kirja(name, price, prices, conditions, id, img_href, link))
     return tuotteet
 
+price_cache = {}
+def get_price_san(url):
+    global price_cache
+    if url in price_cache.keys():
+        return price_cache[url]
+    soup = request(url)
+    prices = soup.find_all('span', {'class': 'price'})
+    cond = soup.find_all('span', {'class': 'product-name'})
+    out = []
+    conditions = []
+    for i in prices:
+        out.append(i.text.replace(",", "").replace("€", "").replace(" ","").replace("\xa0", "").replace(u'\xa0', ""))
+    for i in cond:
+        conditions.append(i.text)
+    if out == []:
+        saveHTML(str(soup))
+    price_cache[url] = [out, conditions]
+    return out, conditions
 def get_products_san(page_soup, verbose=False, keyword=""):
     tuotteet = []
     key = str(page_soup).split("?key=")[1].split("&")[0]
@@ -127,7 +145,12 @@ def get_products_san(page_soup, verbose=False, keyword=""):
 #    print(data)
     books = data["hits"]
     for i in books:
-        tuotteet.append(kirja(i["title"], i["score"], [], [], i["id"], i["images"]["main"], i["url"]))
+        iurl = i["url"]
+        prices, conditions = get_price_san(iurl)
+        price = int(i["score"])
+        if len(prices) > 0:
+            price = int(prices[len(prices)-1])
+        tuotteet.append(kirja(i["title"], price, prices, conditions, i["id"], i["images"]["main"], iurl))
     return tuotteet
 
 kirjat_scrape_err = ""
