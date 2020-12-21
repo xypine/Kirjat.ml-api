@@ -21,8 +21,13 @@ app_version = "1.0"
 app_start_wait = 0
 
 # Store variables
-store_url = "https://kauppa.jamera.net"
-store_url_search = "https://kauppa.jamera.net/kauppa/haku/?q="
+store_url_jam = "https://kauppa.jamera.net"
+store_url_search_jam = "https://kauppa.jamera.net/kauppa/haku/?q="
+store_url_san = "https://www.sanomapro.fi/"
+store_url_search_san = "https://www.sanomapro.fi/haku/?q="
+store_url_api_san = "https://api.addsearch.com/v1/search/"
+
+store_domains = [store_url_jam, store_url_san]
 store_lang = "fi-FI"
 store_lang_short = "fi"
 
@@ -53,7 +58,7 @@ def request_img(url):
            response.headers['Content-Type'] + ";" +
            "base64," + str(base64.b64encode(response.content).decode("utf-8")))
     return uri
-def get_products(page_soup, verbose=False):
+def get_products_jam(page_soup, verbose=False):
     if len(page_soup.find_all('table', {'class': 'tuotteet_flex'})) < 1:
         print("Failed to find the product container from the provided HTML, returning an empty array.")
         return []
@@ -71,9 +76,9 @@ def get_products(page_soup, verbose=False):
         link = ""
         if len(product_images) > 0:
             img = product_images[0]
-            img_href = store_url + "/" + img['src']
+            img_href = store_url_jam + "/" + img['src']
             try:
-                link = store_url + img.parent['href']
+                link = store_url_jam + img.parent['href']
             except Exception as e:
                 print("Couldn't get the link: " + e)
         price = -1
@@ -107,19 +112,26 @@ def get_products(page_soup, verbose=False):
         tuotteet.append(kirja(name, price, prices, conditions, id, img_href, link))
     return tuotteet
 
+def get_products_san(page_soup, verbose=False, keyword=""):
+    tuotteet = []
+    key = str(page_soup).split("?key=")[1].split("&")[0]
+    print("key: " + key)
+    url = store_url_api_san + key + "?term=" + keyword + "&fuzzy=auto&page=1&limit=20&sort=relevance&order=desc"
+    print("Making a request to " + url)
+    return tuotteet
 
 kirjat_scrape_err = ""
 
 
-def scrape(bookname="Tekijä Pitkä matematiikka 3"):
-    global store_url, store_url_search, kirjat_scrape_err
+def scrape_jam(bookname="Tekijä Pitkä matematiikka 3"):
+    global store_url_jam, store_url_search_jam, kirjat_scrape_err
     print("Getting the HTML...")
     book = bookname
     book = clean(book)
-    soup = request(store_url_search + book)
+    soup = request(store_url_search_jam + book)
     print("Getting the HTML...OK")
     print("Parsing the HTML for products...")
-    products = get_products(soup, True)
+    products = get_products_jam(soup, True)
     if products == []:
         err = parse_error(soup)
         if err == "":
@@ -153,6 +165,54 @@ def scrape(bookname="Tekijä Pitkä matematiikka 3"):
     print("Parsing the HTML for products...OK")
     return products
 
+def saveHTML(html):
+    with open("debug.html", "w+") as f:
+        f.write(html)
+        f.close()
+def scrape_san(bookname="Tekijä Pitkä matematiikka 3"):
+    global store_url_san, store_url_search_san, kirjat_scrape_err
+    print("Getting the HTML...")
+    book = bookname
+    book = clean(book)
+    print("Url: " + str(store_url_search_san)) # + book
+    soup = request(store_url_search_san + book)
+    print("Getting the HTML...OK")
+    print("Parsing the HTML for products...")
+    products = get_products_san(soup, True, bookname)
+    #return []
+    if products == []:
+        err = parse_error(soup)
+        if err == "":
+            print("Apparently no products were found, saving the HTML for debugging...")
+            saveHTML(str(soup))
+            print("HTML saved to debug.html")
+        else:
+            print("Store returned this error: ")
+            kirjat_scrape_err = err
+            print(err)
+    ind = 0
+    best = kirja()
+    bestDiff = 99999999
+    ind = 0
+    for i in products:
+        diff = set(i.name).difference(set(bookname))
+        dif = len(diff) + ind * 4
+        print(str(i) + " | " + str(dif))
+
+        if i.price > -1:
+            diff = set(i.name).difference(set(bookname))
+            diff2 = abs(len(bookname) - len(i.name))
+            dif = len(diff) + ind * 4
+            if dif < bestDiff:
+                bestDiff = dif
+                best = i
+                print(dif)
+        ind += 1
+    print("\n\nBest match: " + str(best))
+    print("Best match image: " + best.image)
+    print("Best match price: " + best.my_price_to_e())
+    print("Parsing the HTML for products...OK")
+    return products
 
 def parse_error(soup):
     errors = soup.find_all('div', {'class': 'error'})
@@ -175,9 +235,9 @@ def scrape_from_file(filename):
         #        print("Encoding " + str(bookname) + "...")
         #        bookname = bookname.encode('windows-1250')
         #        bookname = bookname.decode('latin-1')
-        soup = request(store_url_search + str(bookname))
-        print("Scraping " + str(store_url_search + str(bookname)))
-        products = get_products(soup, True)
+        soup = request(store_url_search_jam + str(bookname))
+        print("Scraping " + str(store_url_search_jam + str(bookname)))
+        products = get_products_jam(soup, True)
         bestDiff = 99999
         best = kirja()
         ind = 0
@@ -232,6 +292,7 @@ if __name__ == "__main__":
         else:
             print("File not found.")
     else:
-        scrape(input("Query: "))
+        print("Query mode: sanomapro")
+        scrape_san(input("Query: "))
 
     print("Scrape finished")

@@ -12,7 +12,7 @@ from flask import request
 import base64
 
 import scraper
-from scraper import scrape, banner
+from scraper import scrape_jam, banner
 
 
 app = Flask(__name__)
@@ -74,7 +74,7 @@ def query():
         usedCache = False
         if not bookname in cache.keys() or flag_nocache:
             print("\"" + bookname + "\" not in cache, scraping...")
-            books = scrape(bookname)
+            books = scrape_jam(bookname)
             err = scraper.clean(scraper.kirjat_scrape_err)
             cache[bookname] = (books, err)
         else:

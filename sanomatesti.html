@@ -1,0 +1,16 @@
+<script src="https://cdn.jsdelivr.net/npm/addsearch-js-client@0.5/dist/addsearch-js-client.min.js"></script>
+<script>
+// Create client with your 32-character SITEKEY
+var key = "0d60be5c7f51735a91f5d2e39c943bc4";
+var client = new AddSearchClient(key);
+ 
+// Callback function
+var cb = function(res) {
+  // Print results to console
+  console.log(res);
+}
+ 
+// Execute search. Callback function will be called with search results
+client.search('keyword', cb);
+</script>
+request like https://api.addsearch.com/v1/search/0d60be5c7f51735a91f5d2e39c943bc4?term=keyword&fuzzy=auto&page=1&limit=10&sort=relevance&order=desc
