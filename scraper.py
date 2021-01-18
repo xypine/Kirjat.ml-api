@@ -137,7 +137,7 @@ def get_products_san(page_soup, verbose=False, keyword=""):
     tuotteet = []
     key = str(page_soup).split("?key=")[1].split("&")[0]
     print("key: " + key)
-    url = store_url_api_san + key + "?term=" + keyword + "&fuzzy=auto&page=1&limit=20&sort=relevance&order=desc"
+    url = store_url_api_san + key + "?term=" + keyword + "&fuzzy=auto&page=1&limit=5&sort=relevance&order=desc"
     print("Making a request to " + url)
     soup = request(url)
     data = json.loads(str(soup))
