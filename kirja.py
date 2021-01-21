@@ -6,7 +6,8 @@ class kirja:
     conditions = []
     id = ""
     link = ""
-    def __init__(self, name="", price=-1, prices = [], conditions = [], id = -1, image="", link = ""):
+    store = ""
+    def __init__(self, name="", price=-1, prices = [], conditions = [], id = -1, image="", link = "", store = ""):
         self.name = name
         self.price = price
         self.prices = prices
@@ -14,6 +15,7 @@ class kirja:
         self.id = id
         self.image = image
         self.link = link
+        self.store = store
     def __str__(self):
         condition = "NA"
         if len(self.conditions) > 0:
@@ -38,4 +40,5 @@ class kirja:
                 "conditions" : self.conditions,
                 "id" : self.id,
                 "link" : self.link,
+                "store" : self.store,
                 }

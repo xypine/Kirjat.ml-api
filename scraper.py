@@ -112,7 +112,7 @@ def get_products_jam(page_soup, verbose=False):
             ids = product_name[0].parent.findAll("a")
             if len(ids) > 1:
                 id = ids[0]["name"]
-        tuotteet.append(kirja(name, price, prices, conditions, id, img_href, link))
+        tuotteet.append(kirja(name, price, prices, conditions, id, img_href, link, "jam"))
     return tuotteet
 
 price_cache = {}
@@ -150,7 +150,7 @@ def get_products_san(page_soup, verbose=False, keyword=""):
         price = int(i["score"])
         if len(prices) > 0:
             price = int(prices[len(prices)-1])
-        tuotteet.append(kirja(i["title"], price, prices, conditions, i["id"], i["images"]["main"], iurl))
+        tuotteet.append(kirja(i["title"], price, prices, conditions, i["id"], i["images"]["main"], iurl, "san"))
     return tuotteet
 
 kirjat_scrape_err = ""
