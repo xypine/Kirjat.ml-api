@@ -13,3 +13,6 @@ in the project's directory.
 # Running (insecure dev mode)
 Start the api-server with python using the command 
 ```$ python3 ./api_server.py```.
+
+# License
+All of this project's code is licensed under the MIT-license, consult the file "[LICENSE](LICENSE)" for more information.
