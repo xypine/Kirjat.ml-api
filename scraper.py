@@ -307,7 +307,7 @@ def banner():
 if __name__ == "__main__":
     banner()
     print(app_name + " scraper version " + app_version)
-    print("Licensed under the MIT-License by Elias Eskelinen 2020")
+    print("Licensed under the MIT-License by Elias Eskelinen 2021")
     print("Starting scraping in " + str(
         app_start_wait) + " seconds, please be adviced: this could be illegal in your region and time.")
     print("Press Ctrl+C to cancel at any time.")

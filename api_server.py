@@ -8,6 +8,7 @@ from flask import Flask
 from flask_cors import CORS
 from flask import jsonify
 from flask import request
+from flask import render_template
 
 import base64
 
@@ -34,58 +35,28 @@ def booklistTodictList(books):
     return out
 @app.route("/")
 def helloWorld():
-    view = "<title>Kirjat.ml</title>"
     global c
     c = c + 1
-    view = view + "<h2> Kirjat.ml api </h2>"
-    view = view + "<hr \>"
-    view = view + "<form action=\" " + "/api/v1" + "\" method=\"post\">"
-    view = view + "<input type=\"text\" name=\"query\">"
-    view = view + "<input type=\"submit\">"
-    view = view + "</form>"
-    view += "<a href=\"/batch\"> Try batch query instead </a>"
-    view = view + "<br \\><hr \\>"
-    view = view + "Kirjat.ml api v. " + str(scraper.app_version) + " | <a href=\"https://raw.githubusercontent.com/jonnelafin/A-/master/LICENSE\">LICENSE</a>"
-    view += "<p>App status: " + str(app_status) + "</p>"
-    view += str(c) + " Requests since last boot"
-    return view
-    
+    return render_template('index.html', c=str(c), app_status=app_status, bookstore="Jamera", name="query", app_version = scraper.app_version, hint="Type the name of the book you want to search here.")
+
 @app.route("/batch")
 def batch():
-    view = "<title>Kirjat.ml batch query</title>"
     global c
     c = c + 1
-    view = view + "<h2> Kirjat.ml api batch query</h2>"
-    view = view + "<hr \>"
-    view = view + "<form action=\" " + "/api/v1" + "\" method=\"post\">"
-    view = view + "<textarea name=\"querym\" rows=\"10\" cols=\"80\"> Type your books here, each on it's own line </textarea>"
-    view += "<br><br>"
-    view = view + "<input type=\"submit\">"
-    view = view + "</form>"
-    view += "<a href=\"/\"> Back </a>"
-    view = view + "<br \\><hr \\>"
-    view = view + "Kirjat.ml api v. " + str(scraper.app_version) + " | <a href=\"https://raw.githubusercontent.com/jonnelafin/A-/master/LICENSE\">LICENSE</a>"
-    view += "<p>App status: " + str(app_status) + "</p>"
-    view += str(c) + " Requests since last boot"
-    return view
+    return render_template('index.html', c=str(c), app_status=app_status, bookstore="Jamera-monihaku", name="querym", app_version = scraper.app_version, hint=" Type your books here, each on it's own line ")
 
 @app.route("/sanoma")
 def san():
-    view = "<title>Kirjat.ml sanomapro edition</title>"
     global c
     c = c + 1
-    view = view + "<h2> Kirjat.ml api sanomapro edition</h2>"
-    view = view + "<hr \>"
-    view = view + "<form action=\" " + "/api/v1" + "\" method=\"post\">"
-    view = view + "<input type=\"text\" name=\"querysan\">"
-    view = view + "<input type=\"submit\">"
-    view = view + "</form>"
-    view += "<a href=\"/batch\"> Try batch query instead </a>"
-    view = view + "<br \\><hr \\>"
-    view = view + "Kirjat.ml api v. " + str(scraper.app_version) + " | <a href=\"https://raw.githubusercontent.com/jonnelafin/A-/master/LICENSE\">LICENSE</a>"
-    view += "<p>App status: " + str(app_status) + "</p>"
-    view += str(c) + " Requests since last boot"
-    return view
+    return render_template('index.html', c=str(c), app_status=app_status, bookstore="Sanomapro", name="querysan", app_version = scraper.app_version, hint="Type the name of the book you want to search here.")
+
+@app.route("/batchsanoma")
+def batchsanoma():
+    global c
+    c = c + 1
+    return render_template('index.html', c=str(c), app_status=app_status, bookstore="Sanomapro-monihaku", name="querymsan", app_version = scraper.app_version, hint=" Type your books here, each on it's own line ")
+
 @app.route("/api/v1", methods=['POST'])
 def query():
     print(request.form)
@@ -187,10 +158,17 @@ def img(url):
             return res
     else:
         return imgCache[url]
+@app.route("/license")
+def license():
+    l = "MIT"
+    with open("LICENSE", "r+") as f:
+        l = f.readlines()
+        f.close()
+    return "<br />".join(l)
 if __name__ == '__main__':
     banner()
     print(scraper.app_name + " api version " + scraper.app_version)
-    print("Licensed under the MIT-License by Elias Eskelinen 2020")
+    print("Licensed under the MIT-License by Elias Eskelinen 2021")
     # Bind to PORT if defined, otherwise default to 5000.
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
