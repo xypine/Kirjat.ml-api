@@ -101,7 +101,10 @@ def get_products_jam(page_soup, verbose=False):
                 price_possible = price_sub.find_all('span')
                 if len(price_possible) > 0:
                     try:
-                        p = int(price_possible[0].text.replace("€", "").replace(",", ""))
+                        target = price_possible[0]
+                        if( len(target.find_all('b')) > 0 ): #Alennus
+                            target = target.find_all('b')[0]
+                        p = int(target.text.replace("€", "").replace(",", ""))
                         price = p  # 13,30 € -> 1330
                         prices.append(p)
                     except Exception as e:
@@ -325,7 +328,7 @@ if __name__ == "__main__":
         else:
             print("File not found.")
     else:
-        print("Query mode: sanomapro")
-        scrape_san(input("Query: "))
+        print("Query mode: jamera")
+        scrape_jam(input("Query: "))
 
     print("Scrape finished")
