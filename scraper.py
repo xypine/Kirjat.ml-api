@@ -149,7 +149,7 @@ def get_products_san(page_soup, verbose=False, keyword=""):
         prices, conditions = get_price_san(iurl)
         price = int(i["score"])
         if len(prices) > 0:
-            price = int(prices[len(prices)-1])
+            price = int(prices[-1])
         tuotteet.append(kirja(i["title"], price, prices, conditions, i["id"], i["images"]["main"], iurl, "san"))
     return tuotteet
 
