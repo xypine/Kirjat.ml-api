@@ -140,7 +140,7 @@ imgCache = {}
 def img(url):
     if not url in imgCache.keys() or flag_nocache:
         try:
-            if not "kauppa.jamera.net" in str(base64.b64decode(bytes(url, 'utf-8'))):
+            if "kauppa.jamera.net" not in str(base64.b64decode(bytes(url, 'utf-8'))):
                 res = jsonify({"code": 403, "reason": "invalid url domain", "stacktrace": "with url: " + url}), 404
                 imgCache[url] = res
                 return res
