@@ -8,7 +8,7 @@ frontend: [kirjat.ml](https://kirjat.ml)
 # Set up your environment
 You have to have python3 installed.
 Install all the project dependencies by running
-```$ pip3 -r install ./requirements.txt```
+```$ pip3 install -r ./requirements.txt```
 in the project's directory.
 # Running (insecure dev mode)
 Start the api-server with python using the command 
