@@ -7,7 +7,11 @@ class kirja:
     id = ""
     link = ""
     store = ""
-    def __init__(self, name="", price=-1, prices = [], conditions = [], id = -1, image="", link = "", store = ""):
+    def __init__(self, name="", price=-1, prices = None, conditions = None, id = -1, image="", link = "", store = ""):
+        if prices is None:
+            prices = []
+        if conditions is None:
+            conditions = []
         self.name = name
         self.price = price
         self.prices = prices
