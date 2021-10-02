@@ -40,6 +40,13 @@ def jam():
     c = c + 1
     return render_template('index.html', endpoint="/api/v1", c=str(c), app_status=app_status, bookstore="Jamera", name="query", app_version = scraper.app_version, hint="Type the name of the book you want to search here.")
 
+@app.route("/jamera_v2")
+def jam_v2():
+    global c
+    c = c + 1
+    return render_template('index.html', endpoint="/api/v2", c=str(c), app_status=app_status, bookstore="Jamera (API V2)", name="queryjamera", app_version = scraper.app_version, hint="Type the name of the book you want to search here.")
+
+
 @app.route("/batchjamera")
 def batch():
     global c
@@ -47,10 +54,16 @@ def batch():
     return render_template('index.html', endpoint="/api/v1", c=str(c), app_status=app_status, bookstore="Jamera-monihaku", name="querym", app_version = scraper.app_version, hint="Type your books here, each on it's own line")
 
 @app.route("/sanoma")
-def san():
+def san_v2():
     global c
     c = c + 1
     return render_template('index.html', endpoint="/api/v1", c=str(c), app_status=app_status, bookstore="Sanomapro", name="querysan", app_version = scraper.app_version, hint="Type the name of the book you want to search here.")
+
+@app.route("/sanoma_v2")
+def san():
+    global c
+    c = c + 1
+    return render_template('index.html', endpoint="/api/v2", c=str(c), app_status=app_status, bookstore="Sanomapro (API V2)", name="querysanomapro", app_version = scraper.app_version, hint="Type the name of the book you want to search here.")
 
 @app.route("/batchsanoma")
 def batchsanoma():
@@ -62,7 +75,7 @@ def batchsanoma():
 def batchmix():
     global c
     c = c + 1
-    return render_template('index.html', endpoint="/api/v2", c=str(c), app_status=app_status, bookstore="Täysi monihaku", name="queryall", app_version = scraper.app_version, hint="Type your books here, each on it's own line")
+    return render_template('index.html', endpoint="/api/v2", c=str(c), app_status=app_status, bookstore="Täysi monihaku (API V2)", name="queryall", app_version = scraper.app_version, hint="Type your books here, each on it's own line")
 
 @app.route("/api/v1", methods=['POST'])
 def query():
@@ -205,7 +218,16 @@ def query_v2():
         resultSan = getBooksV2(booknames, "san")
         #result = resultJam + resultSan
         return jsonify({"code" : 200,"result" : {"jamera" : resultJam, "sanomapro" : resultSan}}), 200
-    return jsonify({"code": 400, "reason": "400: Query form must contain one of the keys \"queryall\", \"queryjam\" or \"querysan\"", "stacktrace": ""}), 400
+    elif 'queryjamera' in request.form.keys():
+            booknames = request.form.get('queryjamera').split("\n")
+            resultJam = getBooksV2(booknames, "jam")
+            return jsonify({"code" : 200,"result" :  resultJam}), 200
+    elif 'querysanomapro' in request.form.keys():
+            booknames = request.form.get('querysanomapro').split("\n")
+            resultSan = getBooksV2(booknames, "san")
+            #result = resultJam + resultSan
+            return jsonify({"code" : 200,"result" : resultSan}), 200
+    return jsonify({"code": 400, "reason": "400: Query form must contain one of the keys \"queryall\", \"queryjamera\" or \"querysanomapro\"", "stacktrace": ""}), 400
     
 @app.route("/license")
 def license():
