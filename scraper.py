@@ -140,7 +140,7 @@ def get_products_san(page_soup, verbose=False, keyword=""):
     tuotteet = []
     key = str(page_soup).split("?key=")[1].split("&")[0]
     print("key: " + key)
-    url = store_url_api_san + key + "?term=" + keyword + "&fuzzy=auto&page=1&limit=5&sort=relevance&order=desc"
+    url = store_url_api_san + key + "?term=" + keyword + "&fuzzy=auto&page=1&limit=3&sort=relevance&order=desc"
     print("Making a request to " + url)
     soup = request(url)
     data = json.loads(str(soup))
@@ -205,7 +205,7 @@ def saveHTML(html):
     with open("debug.html", "w+") as f:
         f.write(html)
         f.close()
-def scrape_san(bookname="Tekijä Pitkä matematiikka 3"):
+def scrape_san(bookname):
     global store_url_san, store_url_search_san, kirjat_scrape_err
     print("Getting the HTML...")
     book = bookname
