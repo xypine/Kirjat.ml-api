@@ -31,31 +31,38 @@ flag_nocache = False
 def booklistTodictList(books):
     out = []
     for i in books:
-        out.append(i.to_dict())
+        if not (i.image == "" and i.price == -1 and i.name == "" and i.conditions == []): # The book is invalid
+            out.append(i.to_dict())
     return out
-@app.route("/")
-def helloWorld():
+@app.route("/jamera")
+def jam():
     global c
     c = c + 1
-    return render_template('index.html', c=str(c), app_status=app_status, bookstore="Jamera", name="query", app_version = scraper.app_version, hint="Type the name of the book you want to search here.")
+    return render_template('index.html', endpoint="/api/v1", c=str(c), app_status=app_status, bookstore="Jamera", name="query", app_version = scraper.app_version, hint="Type the name of the book you want to search here.")
 
-@app.route("/batch")
+@app.route("/batchjamera")
 def batch():
     global c
     c = c + 1
-    return render_template('index.html', c=str(c), app_status=app_status, bookstore="Jamera-monihaku", name="querym", app_version = scraper.app_version, hint=" Type your books here, each on it's own line ")
+    return render_template('index.html', endpoint="/api/v1", c=str(c), app_status=app_status, bookstore="Jamera-monihaku", name="querym", app_version = scraper.app_version, hint="Type your books here, each on it's own line")
 
 @app.route("/sanoma")
 def san():
     global c
     c = c + 1
-    return render_template('index.html', c=str(c), app_status=app_status, bookstore="Sanomapro", name="querysan", app_version = scraper.app_version, hint="Type the name of the book you want to search here.")
+    return render_template('index.html', endpoint="/api/v1", c=str(c), app_status=app_status, bookstore="Sanomapro", name="querysan", app_version = scraper.app_version, hint="Type the name of the book you want to search here.")
 
 @app.route("/batchsanoma")
 def batchsanoma():
     global c
     c = c + 1
-    return render_template('index.html', c=str(c), app_status=app_status, bookstore="Sanomapro-monihaku", name="querymsan", app_version = scraper.app_version, hint=" Type your books here, each on it's own line ")
+    return render_template('index.html', endpoint="/api/v1", c=str(c), app_status=app_status, bookstore="Sanomapro-monihaku", name="querymsan", app_version = scraper.app_version, hint="Type your books here, each on it's own line")
+
+@app.route("/")
+def batchmix():
+    global c
+    c = c + 1
+    return render_template('index.html', endpoint="/api/v2", c=str(c), app_status=app_status, bookstore="Täysi monihaku", name="queryall", app_version = scraper.app_version, hint="Type your books here, each on it's own line")
 
 @app.route("/api/v1", methods=['POST'])
 def query():
@@ -158,6 +165,48 @@ def img(url):
             return res
     else:
         return imgCache[url]
+
+# Begin V2
+def getBooksV2(booknames, store):
+    print("[V2] Queries: " + str(booknames))
+    result = {}
+    for book in booknames:
+        scraper.kirjat_scrape_err = ""
+        bookname = book.replace("\r", "").replace("\n", "")
+        
+        cacheToUse = cache
+        if store == "san":
+            cacheToUse = cache_san
+        usedCache = False
+        if not bookname in cacheToUse.keys() or flag_nocache:
+            print("[V2] \"" + bookname + "\" for the store \"" + store + "\" not in cache, scraping...")
+            if store == "jam":
+                books = scrape_jam(bookname)
+            elif store == "san":
+                books = scrape_san(bookname)
+            else:
+                books = []
+                print(f"[V2] Invalid store \"{store}\" specified")
+            err = scraper.clean(scraper.kirjat_scrape_err)
+            cache[bookname] = (books, err)
+        else:
+            usedCache = True
+            print("[V2] \"" + bookname + "\" for the store \"" + store + "\" in cache.")
+            books, err = cache[bookname]
+            scraper.kirjat_scrape_err = ""
+        result[book] = ({"books": booklistTodictList(books), "result_was_cached": usedCache, "errors": err})
+    return result
+@app.route("/api/v2", methods=['POST'])
+def query_v2():
+    print(request.form)
+    if 'queryall' in request.form.keys():
+        booknames = request.form.get('queryall').split("\n")
+        resultJam = getBooksV2(booknames, "jam")
+        resultSan = getBooksV2(booknames, "san")
+        #result = resultJam + resultSan
+        return jsonify({"code" : 200,"result" : {"jamera" : resultJam, "sanomapro" : resultSan}}), 200
+    return jsonify({"code": 400, "reason": "400: Query form must contain one of the keys \"queryall\", \"queryjam\" or \"querysan\"", "stacktrace": ""}), 400
+    
 @app.route("/license")
 def license():
     l = "MIT"

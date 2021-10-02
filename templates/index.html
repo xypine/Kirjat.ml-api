@@ -1,18 +1,18 @@
 <title>Kirjat.ml</title>
 <h2> Kirjat.ml api </h2>
-<h3> {{bookstore}}-mode </h3>
+<h3> {{bookstore}} </h3>
 <p>Vaihtoehdot:
-<a href="/"> Jamera </a>,
+<a href="/"> Täysi monihaku</a>,
+<a href="/jamera"> Jamera </a>,
 <a href="/sanoma"> Sanomapro </a>,
-<a href="/batch"> Jamera-monihaku</a>,
+<a href="/batchjamera"> Jamera-monihaku</a>,
 <a href="/batchsanoma"> Sanomapro-monihaku</a>
 </p>
 <hr \>
-<form action="/api/v1" method="post">
-	<textarea rows="10" cols="80" name="{{name}}">{{hint}}</textarea><br />
+<form action="{{endpoint}}" method="post">
+	<textarea rows="10" cols="80" name="{{name}}" placeholder="{{hint}}"></textarea><br />
 	<input type="submit">
 </form>
-<!--<a href=\"/batch\"> Try batch query instead </a>-->
 <br /><hr />
 <p>Kirjat.ml api v. {{app_version}} | <a href="/license">LICENSE</a></p>
 <p>App status: {{app_status}} </p>
