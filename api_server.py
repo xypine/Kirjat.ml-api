@@ -201,7 +201,7 @@ def getBooksV2(booknames, store):
                 books = []
                 print(f"[V2] Invalid store \"{store}\" specified")
             err = scraper.clean(scraper.kirjat_scrape_err)
-            cache[bookname] = (books, err)
+            cacheToUse[bookname] = (books, err)
         else:
             usedCache = True
             print("[V2] \"" + bookname + "\" for the store \"" + store + "\" in cache.")
